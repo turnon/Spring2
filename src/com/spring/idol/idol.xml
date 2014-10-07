@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                     http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+                     http://www.springframework.org/schema/context
+                     http://www.springframework.org/schema/context/spring-context-3.0.xsd
+                     http://www.springframework.org/schema/aop
+                     http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+                     http://www.springframework.org/schema/tx
+                     http://www.springframework.org/schema/tx/spring-tx-3.0.xsd" xmlns:util="http://www.springframework.org/schema/util">
+
+
+    <bean id="duke" class="com.spring.idol.Juggler">
+        <constructor-arg value="15" />
+    </bean>
+ 
+    <bean id="lovesong" class="com.spring.idol.WayBackIntoLove" />   
+    
+    <bean id="poeticDuke" class="com.spring.idol.PoeticJuggler" ><!--scope="prototype">-->
+        <constructor-arg value="20" />
+        <constructor-arg ref="lovesong" />
+    </bean>   
+    
+    <bean id="apiano" class="com.spring.idol.Piano">
+    </bean>
+    
+    <bean id="aguitar" class="com.spring.idol.Guitar">
+    </bean>
+    
+    <bean id="inst" class="com.spring.idol.Guitar">
+    </bean>
+    
+    <bean id="kenny" class="com.spring.idol.Instrumentalist" autowire="byName">
+        <property name="song"  value="dont want to close my eye"/>
+        <!--<property name="inst" ref="apiano" />       -->     
+    </bean>   
+
+    <bean id="jay" class="com.spring.idol.OneManBand" >
+        <property name="song"  value="dont want to close my eye"/>
+        <property name="insts" >
+            <list>
+                <ref bean="apiano"></ref>
+                <ref bean="aguitar"></ref>
+            </list>
+        </property>  
+        <property name="symphone" >
+            <map>
+                <entry key="first" value-ref="apiano"/>
+                <entry key="second" value-ref="aguitar"/>
+            </map>
+        </property>       
+    </bean>  
+    
+    <!--
+        <util:list id="juggleres" list-class="java.util.ArrayList">
+            <bean class="com.spring.idol.Juggler">
+                <property name="beanBags" value="1"/>
+            </bean>
+            <bean class="com.spring.idol.Juggler">
+                <property name="beanBags" value="2"/>
+            </bean>    
+            <bean class="com.spring.idol.Juggler">
+                <property name="beanBags" value="3"/>
+            </bean>      
+        </util:list>
+    -->
+    
+    <bean id="aud" class="com.spring.audience.Audience" />
+    
+    <aop:config>
+        <aop:aspect ref="aud">
+            
+            <aop:pointcut id="perf" expression="execution(* com.spring.idol.Performer.perform(..))"/>
+            
+            <aop:before pointcut-ref="perf" method="takeSeats" />
+            <aop:before pointcut-ref="perf" method="turnOffCellPhone"/>
+            <aop:after-returning pointcut-ref="perf" method="applaud"/>
+            <aop:after-throwing pointcut-ref="perf" method="demandRefund"/>
+            <!--
+            <aop:before pointcut="execution(* com.spring.idol.Performer.perform(..))" method="takeSeats" />
+            <aop:before pointcut="execution(* com.spring.idol.Performer.perform(..))" method="turnOffCellPhone" />
+            <aop:after-returning pointcut="execution(* com.spring.idol.Performer.perform(..))" method="applaud" />
+            <aop:after-throwing pointcut="execution(* com.spring.idol.Performer.perform(..))" method="demandRefund" />-->
+        </aop:aspect>
+    </aop:config>
+    
+</beans>
